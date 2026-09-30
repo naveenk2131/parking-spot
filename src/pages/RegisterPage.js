@@ -4,11 +4,11 @@ import { useAuth } from '../state/AuthContext';
 import { getErrorMessage } from '../utilities/helpers';
 
 const roleOptions = [
-  { value: 'commuter', icon: '🚗', name: 'Commuter', desc: 'Find & book parking' },
-  { value: 'owner', icon: '🏢', name: 'Parking Owner', desc: 'List & manage spaces' },
+  { value: 'commuter', icon: 'bi-car-front', name: 'Commuter', desc: 'Find & book parking' },
+  { value: 'owner', icon: 'bi-building', name: 'Parking Owner', desc: 'List & manage spaces' },
 ];
 
-const RegisterPage = () => {
+export default function RegisterPage() {
   const { register } = useAuth();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
@@ -46,10 +46,10 @@ const RegisterPage = () => {
     if (/[a-z]/.test(pwd)) score++;
     if (/\d/.test(pwd)) score++;
     if (/[^A-Za-z0-9]/.test(pwd)) score++;
-    if (score <= 2) return { level: score, label: 'Weak', color: '#dc2626' };
-    if (score === 3) return { level: score, label: 'Fair', color: '#d97706' };
-    if (score === 4) return { level: score, label: 'Good', color: '#059669' };
-    return { level: score, label: 'Strong', color: '#059669' };
+    if (score <= 2) return { level: score, label: 'Weak', color: 'var(--ps-occupied)' };
+    if (score === 3) return { level: score, label: 'Fair', color: 'var(--ps-reserved)' };
+    if (score >= 4) return { level: score, label: 'Strong', color: 'var(--ps-available)' };
+    return { level: score, label: 'Strong', color: 'var(--ps-available)' };
   };
 
   const passwordStrength = getPasswordStrength(formData.password);
@@ -74,10 +74,9 @@ const RegisterPage = () => {
 
     try {
       await register(payload);
-      const dest = role === 'owner' ? '/owner' : '/commuter';
+      const dest = role === 'owner' ? '/owner' : '/';
       navigate(dest, { replace: true });
     } catch (err) {
-      // Handle validation errors from backend
       if (err.response?.data?.errors) {
         const errs = {};
         err.response.data.errors.forEach(e => { errs[e.field] = e.message; });
@@ -91,197 +90,185 @@ const RegisterPage = () => {
   };
 
   return (
-    <div className="ps-auth-page" style={{ paddingTop: '2rem', paddingBottom: '2rem' }}>
-      <div className="ps-auth-card animate-fade-in-up" style={{ maxWidth: 520 }}>
-        {/* Logo */}
-        <div className="text-center mb-4">
-          <Link to="/" className="ps-auth-logo">
-            Parking<span>Spot</span>
+    <div style={{ minHeight: '100vh', display: 'flex', backgroundColor: 'var(--ps-background)' }}>
+      {/* Left side: Form */}
+      <div className="d-flex flex-column justify-content-center px-4 col-12 col-lg-5 py-5 overflow-auto" style={{ backgroundColor: 'var(--ps-surface)', borderRight: '1px solid var(--ps-border)' }}>
+        <div className="w-100 mx-auto animate-fade-in" style={{ maxWidth: '420px' }}>
+          <Link to="/" className="text-decoration-none d-flex align-items-center gap-2 mb-4">
+            <i className="bi bi-car-front-fill text-accent fs-3"></i>
+            <span className="fs-3 fw-bold text-primary">ParkingSpot</span>
           </Link>
-          <h1 style={{ fontSize: '1.5rem', fontWeight: 800, marginTop: '1.5rem', marginBottom: '0.25rem' }}>
-            Create your account
-          </h1>
-          <p className="text-muted" style={{ fontSize: '0.9rem' }}>
-            Join ParkingSpot — it's free to get started
-          </p>
-        </div>
+          
+          <h2 className="mb-2">Create Account</h2>
+          <p className="text-muted mb-4">Join ParkingSpot to manage your parking needs.</p>
 
-        {/* Role Selector */}
-        <div className="mb-4">
-          <label className="form-label">I want to</label>
-          <div className="ps-role-selector">
-            {roleOptions.map(r => (
-              <div
-                key={r.value}
-                className={`ps-role-option${role === r.value ? ' selected' : ''}`}
-                onClick={() => setRole(r.value)}
-                id={`role-select-${r.value}`}
-              >
-                <div className="role-icon">{r.icon}</div>
-                <div className="role-name">{r.name}</div>
-                <div style={{ fontSize: '0.75rem', color: 'var(--ps-gray-500)', marginTop: '0.15rem' }}>{r.desc}</div>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        {error && (
-          <div className="alert alert-danger d-flex align-items-center gap-2 mb-3" role="alert">
-            <span>⚠️</span> {error}
-          </div>
-        )}
-
-        <form onSubmit={handleSubmit} noValidate>
-          {/* Name Row */}
-          <div className="row g-3 mb-3">
-            <div className="col-6">
-              <label className="form-label" htmlFor="reg-first-name">First Name</label>
-              <input
-                id="reg-first-name"
-                type="text"
-                name="firstName"
-                className={`form-control${fieldErrors.firstName ? ' is-invalid' : ''}`}
-                placeholder="Jane"
-                value={formData.firstName}
-                onChange={handleChange}
-                required
-                autoComplete="given-name"
-              />
-              {fieldErrors.firstName && <div className="invalid-feedback">{fieldErrors.firstName}</div>}
-            </div>
-            <div className="col-6">
-              <label className="form-label" htmlFor="reg-last-name">Last Name</label>
-              <input
-                id="reg-last-name"
-                type="text"
-                name="lastName"
-                className={`form-control${fieldErrors.lastName ? ' is-invalid' : ''}`}
-                placeholder="Smith"
-                value={formData.lastName}
-                onChange={handleChange}
-                required
-                autoComplete="family-name"
-              />
-              {fieldErrors.lastName && <div className="invalid-feedback">{fieldErrors.lastName}</div>}
+          {/* Role Selector */}
+          <div className="mb-4">
+            <label className="form-label mb-2">I want to...</label>
+            <div className="row g-2">
+              {roleOptions.map(r => (
+                <div key={r.value} className="col-6">
+                  <div 
+                    onClick={() => setRole(r.value)}
+                    className={`ps-card p-3 text-center h-100 ${role === r.value ? 'border-primary bg-light' : ''}`}
+                    style={{ cursor: 'pointer', transition: 'all 0.2s', borderColor: role === r.value ? 'var(--ps-primary)' : 'var(--ps-border)', borderWidth: role === r.value ? '2px' : '1px' }}
+                  >
+                    <i className={`bi ${r.icon} fs-4 mb-2 ${role === r.value ? 'text-primary' : 'text-muted'}`}></i>
+                    <div className="fw-bold text-main" style={{ fontSize: '0.9rem' }}>{r.name}</div>
+                    <div className="text-muted mt-1" style={{ fontSize: '0.75rem' }}>{r.desc}</div>
+                  </div>
+                </div>
+              ))}
             </div>
           </div>
 
-          {/* Business Name (owner only) */}
-          {role === 'owner' && (
-            <div className="mb-3">
-              <label className="form-label" htmlFor="reg-business-name">Business / Facility Name</label>
-              <input
-                id="reg-business-name"
-                type="text"
-                name="businessName"
-                className="form-control"
-                placeholder="e.g. Downtown Parking LLC"
-                value={formData.businessName}
-                onChange={handleChange}
-                autoComplete="organization"
-              />
+          {error && (
+            <div className="alert alert-danger d-flex align-items-center gap-2 py-2" role="alert">
+              <i className="bi bi-exclamation-triangle-fill"></i> {error}
             </div>
           )}
 
-          <div className="mb-3">
-            <label className="form-label" htmlFor="reg-email">Email address</label>
-            <input
-              id="reg-email"
-              type="email"
-              name="email"
-              className={`form-control${fieldErrors.email ? ' is-invalid' : ''}`}
-              placeholder="you@example.com"
-              value={formData.email}
-              onChange={handleChange}
-              required
-              autoComplete="email"
-            />
-            {fieldErrors.email && <div className="invalid-feedback">{fieldErrors.email}</div>}
-          </div>
-
-          <div className="mb-3">
-            <label className="form-label" htmlFor="reg-phone">Phone Number <span className="text-muted fw-normal">(optional)</span></label>
-            <input
-              id="reg-phone"
-              type="tel"
-              name="phone"
-              className="form-control"
-              placeholder="+1 (555) 000-0000"
-              value={formData.phone}
-              onChange={handleChange}
-              autoComplete="tel"
-            />
-          </div>
-
-          <div className="mb-4">
-            <label className="form-label" htmlFor="reg-password">Password</label>
-            <div className="ps-password-field">
-              <input
-                id="reg-password"
-                type={showPassword ? 'text' : 'password'}
-                name="password"
-                className={`form-control${fieldErrors.password ? ' is-invalid' : ''}`}
-                placeholder="Min. 8 chars, uppercase, number"
-                value={formData.password}
-                onChange={handleChange}
-                required
-                autoComplete="new-password"
-                style={{ paddingRight: '2.5rem' }}
-              />
-              <button
-                type="button"
-                className="ps-password-toggle"
-                onClick={() => setShowPassword(p => !p)}
-                aria-label="Toggle password visibility"
-              >
-                {showPassword ? '🙈' : '👁️'}
-              </button>
+          <form onSubmit={handleSubmit} noValidate>
+            <div className="row g-2 mb-3">
+              <div className="col-6">
+                <label className="form-label" htmlFor="reg-first-name">First Name</label>
+                <input
+                  id="reg-first-name"
+                  type="text"
+                  name="firstName"
+                  className={`form-control ${fieldErrors.firstName ? 'is-invalid' : ''}`}
+                  value={formData.firstName}
+                  onChange={handleChange}
+                  required
+                />
+              </div>
+              <div className="col-6">
+                <label className="form-label" htmlFor="reg-last-name">Last Name</label>
+                <input
+                  id="reg-last-name"
+                  type="text"
+                  name="lastName"
+                  className={`form-control ${fieldErrors.lastName ? 'is-invalid' : ''}`}
+                  value={formData.lastName}
+                  onChange={handleChange}
+                  required
+                />
+              </div>
             </div>
-            {fieldErrors.password && <div className="text-danger small mt-1">{fieldErrors.password}</div>}
 
-            {/* Password strength meter */}
-            {formData.password && (
-              <div className="mt-2">
-                <div style={{ display: 'flex', gap: 4, marginBottom: 4 }}>
-                  {[1,2,3,4,5].map(n => (
-                    <div key={n} style={{
-                      flex: 1, height: 3, borderRadius: 2,
-                      background: n <= passwordStrength.level ? passwordStrength.color : 'var(--ps-gray-200)',
-                      transition: 'background 0.3s',
-                    }}></div>
-                  ))}
-                </div>
-                <div style={{ fontSize: '0.75rem', color: passwordStrength.color }}>{passwordStrength.label} password</div>
+            {role === 'owner' && (
+              <div className="mb-3">
+                <label className="form-label" htmlFor="reg-business-name">Business / Facility Name</label>
+                <input
+                  id="reg-business-name"
+                  type="text"
+                  name="businessName"
+                  className="form-control"
+                  value={formData.businessName}
+                  onChange={handleChange}
+                />
               </div>
             )}
+
+            <div className="mb-3">
+              <label className="form-label" htmlFor="reg-email">Email address</label>
+              <input
+                id="reg-email"
+                type="email"
+                name="email"
+                className={`form-control ${fieldErrors.email ? 'is-invalid' : ''}`}
+                value={formData.email}
+                onChange={handleChange}
+                required
+              />
+            </div>
+
+            <div className="mb-3">
+              <label className="form-label" htmlFor="reg-phone">Phone Number <span className="text-muted fw-normal">(optional)</span></label>
+              <input
+                id="reg-phone"
+                type="tel"
+                name="phone"
+                className="form-control"
+                value={formData.phone}
+                onChange={handleChange}
+              />
+            </div>
+
+            <div className="mb-4">
+              <label className="form-label" htmlFor="reg-password">Password</label>
+              <div className="input-group">
+                <input
+                  id="reg-password"
+                  type={showPassword ? 'text' : 'password'}
+                  name="password"
+                  className={`form-control ${fieldErrors.password ? 'is-invalid' : ''}`}
+                  value={formData.password}
+                  onChange={handleChange}
+                  required
+                />
+                <button
+                  type="button"
+                  className="btn btn-outline-secondary bg-transparent border-start-0"
+                  style={{ borderColor: 'var(--ps-border)' }}
+                  onClick={() => setShowPassword(p => !p)}
+                >
+                  <i className={`bi ${showPassword ? 'bi-eye-slash' : 'bi-eye'}`}></i>
+                </button>
+              </div>
+              
+              {formData.password && (
+                <div className="mt-2">
+                  <div className="d-flex gap-1 mb-1">
+                    {[1, 2, 3, 4, 5].map(n => (
+                      <div key={n} style={{
+                        flex: 1, height: 4, borderRadius: 2,
+                        background: n <= passwordStrength.level ? passwordStrength.color : 'var(--ps-border)',
+                        transition: 'background 0.3s'
+                      }}></div>
+                    ))}
+                  </div>
+                  <div style={{ fontSize: '0.75rem', color: passwordStrength.color }}>{passwordStrength.label}</div>
+                </div>
+              )}
+            </div>
+
+            <button
+              type="submit"
+              className="btn btn-primary w-100 mb-4"
+              disabled={isLoading}
+            >
+              {isLoading ? (
+                <><span className="spinner-border spinner-border-sm me-2"></span> Creating account...</>
+              ) : `Create ${role === 'owner' ? 'Owner' : 'Commuter'} Account`}
+            </button>
+          </form>
+
+          <div className="text-center">
+            <span className="text-muted" style={{ fontSize: '0.875rem' }}>Already have an account? </span>
+            <Link to="/login" className="text-accent fw-bold text-decoration-none">
+              Sign In
+            </Link>
           </div>
+        </div>
+      </div>
 
-          <button
-            type="submit"
-            id="register-submit-btn"
-            className="btn btn-primary w-100 btn-lg"
-            disabled={isLoading}
-          >
-            {isLoading ? (
-              <><span className="ps-spinner me-2"></span> Creating account...</>
-            ) : `Create ${role === 'owner' ? 'Owner' : 'Commuter'} Account`}
-          </button>
-        </form>
-
-        <div className="ps-divider"><span>Already have an account?</span></div>
-
-        <Link to="/login" className="btn btn-outline-primary w-100" id="go-to-login-btn">
-          Sign In
-        </Link>
-
-        <p className="text-center text-muted mt-4 mb-0" style={{ fontSize: '0.8rem' }}>
-          By creating an account, you agree to our{' '}
-          <a href="#!" style={{ color: 'var(--ps-primary)' }}>Terms of Service</a> and{' '}
-          <a href="#!" style={{ color: 'var(--ps-primary)' }}>Privacy Policy</a>.
-        </p>
+      {/* Right side: Visual (Desktop Only) */}
+      <div className="d-none d-lg-flex col-lg-7 flex-column justify-content-center align-items-center position-relative overflow-hidden p-5" style={{ backgroundColor: 'var(--ps-primary)' }}>
+        <div style={{
+          position: 'absolute', top: 0, left: 0, right: 0, bottom: 0,
+          backgroundImage: 'radial-gradient(circle at 80% 20%, var(--ps-accent) 0%, transparent 40%), radial-gradient(circle at 20% 80%, var(--ps-primary-light) 0%, transparent 40%)',
+          opacity: 0.2, zIndex: 0
+        }}></div>
+        
+        <div className="z-1 text-center text-white" style={{ maxWidth: '480px' }}>
+          <i className="bi bi-geo-alt mb-4 d-block" style={{ fontSize: '4rem', color: 'var(--ps-accent)' }}></i>
+          <h2 className="mb-3 text-white">Find Your Space</h2>
+          <p className="opacity-75" style={{ fontSize: '1.125rem' }}>
+            Join our network to access thousands of guaranteed parking spaces, or list your own to start earning immediately.
+          </p>
+        </div>
       </div>
     </div>
   );
-};
-
-export default RegisterPage;
+}

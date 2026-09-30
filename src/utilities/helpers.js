@@ -52,9 +52,9 @@ export const formatDateTime = (date) => {
 /**
  * Format currency
  */
-export const formatCurrency = (amount, currency = 'USD') => {
+export const formatCurrency = (amount, currency = 'INR') => {
   if (amount === null || amount === undefined) return '—';
-  return new Intl.NumberFormat('en-US', {
+  return new Intl.NumberFormat('en-IN', {
     style: 'currency',
     currency,
   }).format(amount);
@@ -73,11 +73,11 @@ export const capitalize = (str) => {
  */
 export const getRoleInfo = (role) => {
   const roles = {
-    commuter: { label: 'Commuter', icon: '🚗', badgeClass: 'badge-role-commuter' },
-    owner: { label: 'Owner', icon: '🏢', badgeClass: 'badge-role-owner' },
-    admin: { label: 'Admin', icon: '⚙️', badgeClass: 'badge-role-admin' },
+    commuter: { label: 'Commuter', icon: 'bi-car-front-fill', badgeClass: 'bg-primary text-white ps-badge' },
+    owner: { label: 'Owner', icon: 'bi-building', badgeClass: 'bg-success text-white ps-badge' },
+    admin: { label: 'Admin', icon: 'bi-shield-lock-fill', badgeClass: 'bg-danger text-white ps-badge' },
   };
-  return roles[role] || { label: capitalize(role), icon: '👤', badgeClass: '' };
+  return roles[role] || { label: capitalize(role), icon: 'bi-person', badgeClass: 'bg-secondary text-white ps-badge' };
 };
 
 /**

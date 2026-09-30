@@ -5,18 +5,21 @@ import Sidebar from '../components/Sidebar';
 
 const commuterNav = [
   {
+    label: 'Navigation',
     items: [
-      { path: '/commuter', label: 'Overview', icon: '🏠', exact: true },
-      { path: '/commuter/find-parking', label: 'Find Parking', icon: '🔍' },
-      { path: '/commuter/bookings', label: 'My Bookings', icon: '📋' },
-      { path: '/commuter/vehicles', label: 'Vehicles', icon: '🚗' },
-      { path: '/commuter/favorites', label: 'Favorites', icon: '⭐' },
+      { path: '/commuter', label: 'Dashboard', icon: 'bi-grid-1x2', exact: true },
+      { path: '/commuter/find-parking', label: 'Find Parking', icon: 'bi-search' },
+      { path: '/commuter/bookings', label: 'My Bookings', icon: 'bi-calendar-check' },
+      { path: '/commuter/premium-services', label: 'Premium Services', icon: 'bi-star' },
     ],
   },
   {
-    label: 'Account',
+    label: 'Settings',
     items: [
-      { path: '/commuter/profile', label: 'Profile', icon: '👤' },
+      { path: '/commuter/vehicles', label: 'Vehicles', icon: 'bi-car-front' },
+      { path: '/commuter/favorites', label: 'Favorites', icon: 'bi-star' },
+      { path: '/commuter/notifications', label: 'Notifications', icon: 'bi-bell' },
+      { path: '/commuter/profile', label: 'Profile', icon: 'bi-person' },
     ],
   },
 ];

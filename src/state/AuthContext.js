@@ -89,21 +89,27 @@ export const AuthProvider = ({ children }) => {
   }, []);
 
   const login = useCallback(async (email, password) => {
-    dispatch({ type: AUTH_ACTIONS.SET_LOADING, payload: true });
     dispatch({ type: AUTH_ACTIONS.CLEAR_ERROR });
-    const result = await authService.login(email, password);
-    authService.saveAuth(result.data.token, result.data.user);
-    dispatch({ type: AUTH_ACTIONS.LOGIN_SUCCESS, payload: result.data });
-    return result.data;
+    try {
+      const result = await authService.login(email, password);
+      authService.saveAuth(result.data.token, result.data.user);
+      dispatch({ type: AUTH_ACTIONS.LOGIN_SUCCESS, payload: result.data });
+      return result.data;
+    } catch (error) {
+      throw error;
+    }
   }, []);
 
   const register = useCallback(async (data) => {
-    dispatch({ type: AUTH_ACTIONS.SET_LOADING, payload: true });
     dispatch({ type: AUTH_ACTIONS.CLEAR_ERROR });
-    const result = await authService.register(data);
-    authService.saveAuth(result.data.token, result.data.user);
-    dispatch({ type: AUTH_ACTIONS.LOGIN_SUCCESS, payload: result.data });
-    return result.data;
+    try {
+      const result = await authService.register(data);
+      authService.saveAuth(result.data.token, result.data.user);
+      dispatch({ type: AUTH_ACTIONS.LOGIN_SUCCESS, payload: result.data });
+      return result.data;
+    } catch (error) {
+      throw error;
+    }
   }, []);
 
   const logout = useCallback(async () => {
