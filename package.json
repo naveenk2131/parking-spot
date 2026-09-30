@@ -1,0 +1,11 @@
+{
+  "name": "parkingspot",
+  "version": "1.0.0",
+  "description": "ParkingSpot — Guaranteed parking, without the circling. MERN Stack Application.",
+  "private": true,
+  "scripts": {
+    "start:backend": "cd backend && npm run dev",
+    "start:frontend": "cd frontend && npm start",
+    "install:all": "cd backend && npm install && cd ../frontend && npm install"
+  }
+}
